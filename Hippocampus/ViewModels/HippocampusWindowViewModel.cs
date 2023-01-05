@@ -2,9 +2,9 @@ using ReactiveUI;
 
 namespace Hippocampus.ViewModels
 {
-    class HippocampusWindowViewModel : ViewModelBase
+    public class HippocampusWindowViewModel : ViewModelBase
     {
-        public MainViewModel coder { get; }
+        public MainViewModel main { get; }
 
         ViewModelBase content;
 
@@ -16,7 +16,12 @@ namespace Hippocampus.ViewModels
 
         public HippocampusWindowViewModel()
         {
-            Content = coder = new MainViewModel();
+            Content = main = new MainViewModel(this);
+        }
+
+        public void ShowImage()
+        {
+            Content = new ImageViewModel();
         }
     }
 }

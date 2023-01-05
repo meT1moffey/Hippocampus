@@ -22,6 +22,7 @@ namespace Hippocampus.ViewModels
         string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
         FileType fileType = FileType.Text;
+        HippocampusWindowViewModel win;
 
         public string InputPath
         {
@@ -53,9 +54,9 @@ namespace Hippocampus.ViewModels
 
         void ShowText(string text) => LabelOutput = text;
 
-        void ShowImage(string output)
+        void ShowImage(string image)
         {
-            throw new NotImplementedException();
+            win.ShowImage();
         }
 
         void ShowOutput()
@@ -90,8 +91,10 @@ namespace Hippocampus.ViewModels
             }
         }
 
-        public MainViewModel()
+        public MainViewModel(HippocampusWindowViewModel _win)
         {
+            win = _win;
+
             var okEnabled = this.WhenAnyValue(
                 m => m.InputPath,
                 i => !string.IsNullOrEmpty(i)
