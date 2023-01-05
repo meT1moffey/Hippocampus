@@ -1,12 +1,20 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using Hippocampus.Services;
+using System.Collections;
 
 namespace Hippocampus.ViewModels
 {
+    public enum OutputFormat
+    {
+        ShowByLabel = 0,
+        WriteToFile = 1,
+    }
+
     public class MainViewModel : ViewModelBase
     {
-        string filePath, key, output;
+        string filePath, key, labelOutput;
+        OutputFormat outputFormat = OutputFormat.ShowByLabel;
 
         public string FilePath
         {
@@ -20,15 +28,30 @@ namespace Hippocampus.ViewModels
             set => this.RaiseAndSetIfChanged(ref key, value);
         }
 
-        public string Output
+        public string LabelOutput
         {
-            get => output;
-            set => this.RaiseAndSetIfChanged(ref output, value);
+            get => labelOutput;
+            set => this.RaiseAndSetIfChanged(ref labelOutput, value);
         }
 
         public ReactiveCommand<Unit, Unit> Launch { get; }
+        public ReactiveCommand<Unit, Unit> LabelSelected { get; }
+        public ReactiveCommand<Unit, Unit> FileSelected { get; }
 
-        public void ShowText(string text) => Output = text;
+        void ShowText(string text) => LabelOutput = text;
+        void ShowOutput()
+        {
+            string output = Coder.Code(HardDrive.Read(FilePath), Key);
+            switch (outputFormat)
+            {
+                case OutputFormat.ShowByLabel:
+                    ShowText(output);
+                    return;
+                case OutputFormat.WriteToFile:
+                    HardDrive.Write(FilePath + ".vo", output);
+                    return;
+            }
+        }
 
         public MainViewModel()
         {
@@ -36,9 +59,12 @@ namespace Hippocampus.ViewModels
                 x => x.FilePath,
                 x => !string.IsNullOrWhiteSpace(x));
 
-            Launch = ReactiveCommand.Create(() => ShowText(
-                Coder.Code(HardDrive.Read(FilePath), Key)
-                ), okEnabled);
+            Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
+
+            LabelSelected = ReactiveCommand.Create(() =>
+                { outputFormat = OutputFormat.ShowByLabel; });
+            FileSelected = ReactiveCommand.Create(() =>
+            { outputFormat = OutputFormat.WriteToFile; });
         }
     }
 }
