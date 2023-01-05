@@ -5,14 +5,14 @@ using System;
 
 namespace Hippocampus.ViewModels
 {
+    public enum OutputFormat
+    {
+        ShowByLabel = 0,
+        WriteToFile = 1,
+    }
+
     public class MainViewModel : ViewModelBase
     {
-        public enum OutputFormat
-        {
-            ShowByLabel = 0,
-            WriteToFile = 1,
-        }
-
         string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
 
@@ -46,15 +46,25 @@ namespace Hippocampus.ViewModels
         void ShowText(string text) => LabelOutput = text;
         void ShowOutput()
         {
-            string output = Coder.Code(HardDrive.Read(InputPath), Key);
+            string output;
+            if (string.IsNullOrEmpty(Key))
+                output = HardDrive.Read(InputPath);
+            else
+                output = Coder.Code(HardDrive.Read(InputPath), Key);
+
             switch (outputFormat)
             {
                 case OutputFormat.ShowByLabel:
                     ShowText(output);
                     return;
                 case OutputFormat.WriteToFile:
-                    ShowText("File saved as " + outputPath);
-                    HardDrive.Write(outputPath, output);
+                    if(string.IsNullOrEmpty(OutputPath))
+                    {
+                        ShowText("To save file enter it's path");
+                        return;
+                    }
+                    ShowText("File saved as " + OutputPath);
+                    HardDrive.Write(OutputPath, output);
                     return;
             }
         }
@@ -62,13 +72,14 @@ namespace Hippocampus.ViewModels
         public MainViewModel()
         {
             var okEnabled = this.WhenAnyValue(
-                x => x.InputPath,
-                x => !string.IsNullOrWhiteSpace(x));
+                m => m.InputPath,
+                i => !string.IsNullOrEmpty(i)
+                );
 
             Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
 
             OutputSelected = ReactiveCommand.Create((string _outputFormat) =>
-                { Enum.TryParse(_outputFormat, out outputFormat); ShowText(_outputFormat.ToString()); });
+            { Enum.TryParse(_outputFormat, out outputFormat); });
         }
     }
 }
