@@ -6,6 +6,8 @@ namespace Hippocampus.Services
 {
     internal static class HardDrive
     {
+        static public bool FileExsist(string path) => File.Exists(path);
+
         static public string Read(string path)
         {
             string data = "";

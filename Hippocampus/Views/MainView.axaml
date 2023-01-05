@@ -5,12 +5,13 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="300"
              x:Class="Hippocampus.Views.MainView">
 	<StackPanel Spacing="10">
-		<TextBox AcceptsReturn="False" Text="{Binding FilePath}" Watermark="File path"/>
+		<TextBox AcceptsReturn="False" Text="{Binding InputPath}" Watermark="Input file path"/>
 		<TextBox AcceptsReturn="False" Text="{Binding Key}" Watermark="Key" PasswordChar="*"/>
 		<StackPanel Orientation="Horizontal" Spacing="20">
-			<RadioButton IsChecked="True" GroupName="Output" Content="Show" Command="{Binding LabelSelected}"/>
-			<RadioButton GroupName="Output" Content="Write into file" Command="{Binding FileSelected}"/>
+			<RadioButton IsChecked="True" GroupName="Output" Content="Show" Command="{Binding OutputSelected}" CommandParameter="ShowByLabel"/>
+			<RadioButton GroupName="Output" Content="Write into file" Command="{Binding OutputSelected}" CommandParameter="WriteToFile"/>
 		</StackPanel>
+		<TextBox AcceptsReturn="False" Text="{Binding OutputPath}" Watermark="Output file path"/>
 		<Button Command="{Binding Launch}">Launch</Button>
 		<TextBlock Text="{Binding LabelOutput}" TextWrapping="Wrap"/>
 	</StackPanel>

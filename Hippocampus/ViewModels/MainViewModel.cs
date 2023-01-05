@@ -1,31 +1,37 @@
 ﻿using ReactiveUI;
 using System.Reactive;
 using Hippocampus.Services;
-using System.Collections;
+using System;
 
 namespace Hippocampus.ViewModels
 {
-    public enum OutputFormat
-    {
-        ShowByLabel = 0,
-        WriteToFile = 1,
-    }
-
     public class MainViewModel : ViewModelBase
     {
-        string filePath, key, labelOutput;
+        public enum OutputFormat
+        {
+            ShowByLabel = 0,
+            WriteToFile = 1,
+        }
+
+        string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
 
-        public string FilePath
+        public string InputPath
         {
-            get => filePath;
-            set => this.RaiseAndSetIfChanged(ref filePath, value);
+            get => inputPath;
+            set => this.RaiseAndSetIfChanged(ref inputPath, value);
         }
 
         public string Key
         {
             get => key;
             set => this.RaiseAndSetIfChanged(ref key, value);
+        }
+
+        public string OutputPath
+        {
+            get => outputPath;
+            set => this.RaiseAndSetIfChanged(ref outputPath, value);
         }
 
         public string LabelOutput
@@ -35,20 +41,20 @@ namespace Hippocampus.ViewModels
         }
 
         public ReactiveCommand<Unit, Unit> Launch { get; }
-        public ReactiveCommand<Unit, Unit> LabelSelected { get; }
-        public ReactiveCommand<Unit, Unit> FileSelected { get; }
+        public ReactiveCommand<string, Unit> OutputSelected { get; }
 
         void ShowText(string text) => LabelOutput = text;
         void ShowOutput()
         {
-            string output = Coder.Code(HardDrive.Read(FilePath), Key);
+            string output = Coder.Code(HardDrive.Read(InputPath), Key);
             switch (outputFormat)
             {
                 case OutputFormat.ShowByLabel:
                     ShowText(output);
                     return;
                 case OutputFormat.WriteToFile:
-                    HardDrive.Write(FilePath + ".vo", output);
+                    ShowText("File saved as " + outputPath);
+                    HardDrive.Write(outputPath, output);
                     return;
             }
         }
@@ -56,15 +62,13 @@ namespace Hippocampus.ViewModels
         public MainViewModel()
         {
             var okEnabled = this.WhenAnyValue(
-                x => x.FilePath,
+                x => x.InputPath,
                 x => !string.IsNullOrWhiteSpace(x));
 
             Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
 
-            LabelSelected = ReactiveCommand.Create(() =>
-                { outputFormat = OutputFormat.ShowByLabel; });
-            FileSelected = ReactiveCommand.Create(() =>
-            { outputFormat = OutputFormat.WriteToFile; });
+            OutputSelected = ReactiveCommand.Create((string _outputFormat) =>
+                { Enum.TryParse(_outputFormat, out outputFormat); ShowText(_outputFormat.ToString()); });
         }
     }
 }
