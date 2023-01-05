@@ -1,10 +1,8 @@
 ﻿namespace Hippocampus.Services
 {
-    public class Coder
+    internal static class Coder
     {
-        public Coder() { }
-
-        public string Code(string data, string key)
+        static public string Code(string data, string key)
         {
             string coded = "";
 

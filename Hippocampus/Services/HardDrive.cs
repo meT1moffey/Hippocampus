@@ -3,11 +3,9 @@ using System.Text;
 
 namespace Hippocampus.Services
 {
-    internal class FileReader
+    internal static class HardDrive
     {
-        public FileReader() { }
-
-        public string Read(string path)
+        static public string Read(string path)
         {
             string data = "";
 

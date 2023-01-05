@@ -7,8 +7,6 @@ namespace Hippocampus.ViewModels
     public class MainViewModel : ViewModelBase
     {
         string filePath, key, output;
-        FileReader reader;
-        Coder coder;
 
         public string FilePath
         {
@@ -34,15 +32,12 @@ namespace Hippocampus.ViewModels
 
         public MainViewModel()
         {
-            reader = new FileReader();
-            coder = new Coder();
-
             var okEnabled = this.WhenAnyValue(
                 x => x.FilePath,
                 x => !string.IsNullOrWhiteSpace(x));
 
             Launch = ReactiveCommand.Create(() => ShowText(
-                coder.Code(reader.Read(FilePath), Key)
+                Coder.Code(HardDrive.Read(FilePath), Key)
                 ), okEnabled);
         }
     }
