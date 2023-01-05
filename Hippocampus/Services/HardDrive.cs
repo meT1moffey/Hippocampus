@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 
 namespace Hippocampus.Services
@@ -19,6 +20,15 @@ namespace Hippocampus.Services
             }
 
             return data;
+        }
+
+        static public void Write(string path, string data)
+        {
+            using (FileStream fs = File.OpenWrite(path))
+            {
+                Byte[] info = new UTF8Encoding(true).GetBytes(data);
+                fs.Write(info, 0, info.Length);
+            }
         }
     }
 }
