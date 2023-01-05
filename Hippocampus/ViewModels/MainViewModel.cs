@@ -4,7 +4,7 @@ using Hippocampus.Services;
 
 namespace Hippocampus.ViewModels
 {
-    public class CoderViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase
     {
         string filePath, output;
         FileReader reader;
@@ -25,7 +25,7 @@ namespace Hippocampus.ViewModels
 
         public void ShowText(string text) => Output = text;
 
-        public CoderViewModel()
+        public MainViewModel()
         {
             reader = new FileReader();
 

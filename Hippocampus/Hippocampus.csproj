@@ -27,8 +27,11 @@
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Views\CoderView.axaml.cs">
-      <DependentUpon>CoderView.axaml</DependentUpon>
+    <Compile Update="Views\HippocampusWindow.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Views\MainView.axaml.cs">
+      <DependentUpon>MainView.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

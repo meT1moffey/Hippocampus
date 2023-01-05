@@ -2,9 +2,9 @@ using ReactiveUI;
 
 namespace Hippocampus.ViewModels
 {
-    class MainWindowViewModel : ViewModelBase
+    class HippocampusWindowViewModel : ViewModelBase
     {
-        public CoderViewModel coder { get; }
+        public MainViewModel coder { get; }
 
         ViewModelBase content;
 
@@ -14,9 +14,9 @@ namespace Hippocampus.ViewModels
             private set => this.RaiseAndSetIfChanged(ref content, value);
         }
 
-        public MainWindowViewModel()
+        public HippocampusWindowViewModel()
         {
-            Content = coder = new CoderViewModel();
+            Content = coder = new MainViewModel();
         }
     }
 }

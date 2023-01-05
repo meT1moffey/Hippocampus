@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Hippocampus.Views
 {
-    public partial class MainWindow : Window
+    public partial class HippocampusWindow : Window
     {
-        public MainWindow()
+        public HippocampusWindow()
         {
             InitializeComponent();
         }
