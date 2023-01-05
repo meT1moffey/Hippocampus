@@ -8,6 +8,10 @@
 		<TextBox AcceptsReturn="False"
 				 Text="{Binding FilePath}"
 				 Watermark="File path"/>
+		<TextBox AcceptsReturn="False"
+				 Text="{Binding Key}"
+				 Watermark="Key"
+				 PasswordChar="*"/>
 		<Button Command="{Binding Launch}">Launch</Button>
 		<TextBlock Text="{Binding Output}" TextWrapping="Wrap"/>
 	</StackPanel>

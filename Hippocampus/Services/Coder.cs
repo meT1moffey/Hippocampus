@@ -10,7 +10,7 @@
 
             for(int i = 0; i < data.Length; i++)
             {
-                coded += data[i] ^ key[i % key.Length];
+                coded += (char)(data[i] ^ key[i % key.Length]);
             }
 
             return coded;
