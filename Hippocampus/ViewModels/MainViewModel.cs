@@ -11,10 +11,17 @@ namespace Hippocampus.ViewModels
         WriteToFile = 1,
     }
 
+    public enum FileType
+    {
+        Text = 0,
+        Image = 1,
+    }
+
     public class MainViewModel : ViewModelBase
     {
         string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
+        FileType fileType = FileType.Text;
 
         public string InputPath
         {
@@ -42,8 +49,15 @@ namespace Hippocampus.ViewModels
 
         public ReactiveCommand<Unit, Unit> Launch { get; }
         public ReactiveCommand<string, Unit> OutputSelected { get; }
+        public ReactiveCommand<string, Unit> TypeSelected { get; }
 
         void ShowText(string text) => LabelOutput = text;
+
+        void ShowImage(string output)
+        {
+            throw new NotImplementedException();
+        }
+
         void ShowOutput()
         {
             string output;
@@ -55,7 +69,14 @@ namespace Hippocampus.ViewModels
             switch (outputFormat)
             {
                 case OutputFormat.ShowByLabel:
-                    ShowText(output);
+                    switch (fileType) {
+                        case FileType.Text:
+                            ShowText(output);
+                            return;
+                        case FileType.Image:
+                            ShowImage(output);
+                            return;
+                    }
                     return;
                 case OutputFormat.WriteToFile:
                     if(string.IsNullOrEmpty(OutputPath))
@@ -80,6 +101,9 @@ namespace Hippocampus.ViewModels
 
             OutputSelected = ReactiveCommand.Create((string _outputFormat) =>
             { Enum.TryParse(_outputFormat, out outputFormat); });
+
+            TypeSelected = ReactiveCommand.Create((string _fileType) =>
+            { Enum.TryParse(_fileType, out fileType); });
         }
     }
 }

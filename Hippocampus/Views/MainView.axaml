@@ -11,6 +11,10 @@
 			<RadioButton IsChecked="True" GroupName="Output" Content="Show" Command="{Binding OutputSelected}" CommandParameter="ShowByLabel"/>
 			<RadioButton GroupName="Output" Content="Write into file" Command="{Binding OutputSelected}" CommandParameter="WriteToFile"/>
 		</StackPanel>
+		<StackPanel Orientation="Horizontal" Spacing="20">
+			<RadioButton IsChecked="True" GroupName="Type" Content="Text" Command="{Binding TypeSelected}" CommandParameter="Text"/>
+			<RadioButton GroupName="Type" Content="Image" Command="{Binding TypeSelected}" CommandParameter="Image"/>
+		</StackPanel>
 		<TextBox AcceptsReturn="False" Text="{Binding OutputPath}" Watermark="Output file path"/>
 		<Button Command="{Binding Launch}">Launch</Button>
 		<TextBlock Text="{Binding LabelOutput}" TextWrapping="Wrap"/>
