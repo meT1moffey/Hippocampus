@@ -8,31 +8,6 @@ namespace Hippocampus.Services
     {
         static public bool FileExsist(string path) => File.Exists(path);
 
-        static public string Read(string path)
-        {
-            string data = "";
-
-            using (FileStream file = File.OpenRead(path))
-            {
-                byte[] buffer = new byte[file.Length];
-                UTF8Encoding decoder = new UTF8Encoding(true);
-
-                while (file.Read(buffer, 0, buffer.Length) > 0)
-                    data += decoder.GetString(buffer);
-            }
-
-            return data;
-        }
-
-        static public void Write(string path, string data)
-        {
-            using (FileStream file = File.OpenWrite(path))
-            {
-                Byte[] info = new UTF8Encoding(true).GetBytes(data);
-                file.Write(info, 0, info.Length);
-            }
-        }
-
         static public Stream Download(string path) => File.OpenRead(path);
         static public void Upload(Stream data, string path)
         {

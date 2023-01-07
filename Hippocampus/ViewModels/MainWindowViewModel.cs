@@ -55,7 +55,7 @@ namespace Hippocampus.ViewModels
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
 
         void ShowText(string text) => LabelOutput = text;
-        async Task LoadImage(Stream image)
+        async Task ShowImage(Stream image)
         {
             ImageWindowViewModel imageWin;
             try
@@ -71,46 +71,49 @@ namespace Hippocampus.ViewModels
             await ShowDialog.Handle(imageWin);
         }
 
-        void ShowOutput()
+        Stream LoadOutput()
         {
-            Stream output;
-            if(!HardDriveService.FileExsist(InputPath))
+            if (!HardDriveService.FileExsist(InputPath))
             {
-                ShowText("This file does not excist");
-                return;
+                throw new FileNotFoundException("Input file does not exsist");
             }
             using (var file = HardDriveService.Download(InputPath))
-                output = CoderService.Load(file, Key);
+                return CoderService.Load(file, Key);
+        }
 
+        void SaveOutputToFile()
+        {
+            if (string.IsNullOrEmpty(OutputPath))
+            {
+                ShowText("To save file enter it's path");
+                return;
+            }
+            ShowText("File saved as " + OutputPath);
+            HardDriveService.Upload(LoadOutput(), OutputPath);
+        }
+
+        void ShowOutput()
+        {
             switch (outputType)
             {
                 case OutputType.Text:
-                    ShowText(HardDriveService.ReadStream(output));
+                    ShowText(HardDriveService.ReadStream(LoadOutput()));
                     return;
                 case OutputType.Image:
-                    ReactiveCommand.CreateFromTask(() => LoadImage(output)).Execute();
+                    ReactiveCommand.CreateFromTask(() => ShowImage(LoadOutput())).Execute();
                     return;
                 case OutputType.File:
-                    if(string.IsNullOrEmpty(OutputPath))
-                    {
-                        ShowText("To save file enter it's path");
-                        return;
-                    }
-                    ShowText("File saved as " + OutputPath);
-                    HardDriveService.Upload(output, OutputPath);
+                    SaveOutputToFile();
                     return;
             }
         }
 
         public MainWindowViewModel()
         {
-            var okEnabled = this.WhenAnyValue(
-                m => m.InputPath,
-                i => !string.IsNullOrEmpty(i)
-                );
+            var ready = this.WhenAnyValue(m => m.InputPath, i => HardDriveService.FileExsist(i));
 
             ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
-            Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
+            Launch = ReactiveCommand.Create(() => ShowOutput(), ready);
 
             TypeSelected = ReactiveCommand.Create((string _fileType) =>
             { Enum.TryParse(_fileType, out outputType); });
