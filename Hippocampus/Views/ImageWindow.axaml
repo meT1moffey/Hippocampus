@@ -1,8 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="Hippocampus.Views.HippocampusWindow"
+        x:Class="Hippocampus.Views.ImageWindow"
         Icon="/Assets/avalonia-logo.ico"
         Width="800" Height="300"
-        Title="Hippocampus"
-        Content="{Binding Content}">
+        Title="Hippocampus Image">
+	<StackPanel>
+		<Image Source="{Binding Image}" />
+	</StackPanel>
 </Window>

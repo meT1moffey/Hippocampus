@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace Hippocampus.Views
 {
-    public partial class ImageView : UserControl
+    public partial class ImageWindow : Window
     {
-        public ImageView()
+        public ImageWindow()
         {
             InitializeComponent();
         }

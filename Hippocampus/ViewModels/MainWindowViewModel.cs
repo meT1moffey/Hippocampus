@@ -3,8 +3,8 @@ using System.Reactive;
 using Hippocampus.Services;
 using System;
 using System.IO;
-using Avalonia.Controls.Shapes;
-using System.Text;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace Hippocampus.ViewModels
 {
@@ -20,12 +20,11 @@ namespace Hippocampus.ViewModels
         Image = 1,
     }
 
-    public class MainViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
         string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
         FileType fileType = FileType.Text;
-        HippocampusWindowViewModel win;
 
         public string InputPath
         {
@@ -54,11 +53,14 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<Unit, Unit> Launch { get; }
         public ReactiveCommand<string, Unit> OutputSelected { get; }
         public ReactiveCommand<string, Unit> TypeSelected { get; }
+        public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
 
         void ShowText(string text) => LabelOutput = text;
-        void LoadImage(Stream image)
+        async Task LoadImage(Stream image)
         {
-            win.ShowImage(image);
+            var imageWin = new ImageWindowViewModel(image);
+
+            await ShowDialog.Handle(imageWin);
         }
 
         void ShowOutput()
@@ -80,7 +82,7 @@ namespace Hippocampus.ViewModels
                             ShowText(HardDrive.ReadStream(output));
                             return;
                         case FileType.Image:
-                            LoadImage(output);
+                            ReactiveCommand.CreateFromTask(() => LoadImage(output)).Execute();
                             return;
                     }
                     return;
@@ -96,15 +98,14 @@ namespace Hippocampus.ViewModels
             }
         }
 
-        public MainViewModel(HippocampusWindowViewModel _win)
+        public MainWindowViewModel()
         {
-            win = _win;
-
             var okEnabled = this.WhenAnyValue(
                 m => m.InputPath,
                 i => !string.IsNullOrEmpty(i)
                 );
 
+            ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
             Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
 
             OutputSelected = ReactiveCommand.Create((string _outputFormat) =>

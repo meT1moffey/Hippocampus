@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Hippocampus.ViewModels
 {
-    public class ImageViewModel : ViewModelBase
+    public class ImageWindowViewModel : ViewModelBase
     {
         string source = "C:\\Tima\\Scripti\\Hippocampus\\Hippocampus\\TestImage.png";
         Bitmap? image;
@@ -22,9 +22,9 @@ namespace Hippocampus.ViewModels
             set => this.RaiseAndSetIfChanged(ref source, value);
         }
 
-        public ImageViewModel(Stream image)
+        public ImageWindowViewModel(Stream image)
         {
-            Image = Bitmap.DecodeToWidth(image, 400);
+            Image = Bitmap.DecodeToHeight(image, 720);
         }
     }
 }

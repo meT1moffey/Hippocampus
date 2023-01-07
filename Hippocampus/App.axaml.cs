@@ -19,9 +19,9 @@ namespace Hippocampus
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new HippocampusWindow
+                desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new HippocampusWindowViewModel(),
+                    DataContext = new MainWindowViewModel(),
                 };
             }
         }
