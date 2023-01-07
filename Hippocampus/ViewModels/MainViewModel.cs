@@ -63,21 +63,24 @@ namespace Hippocampus.ViewModels
 
         void ShowOutput()
         {
-            string output;
-            if (string.IsNullOrEmpty(Key))
-                output = HardDrive.Read(InputPath);
-            else
-                output = Coder.Code(HardDrive.Read(InputPath), Key);
+            Stream output;
+            if(!HardDrive.FileExsist(InputPath))
+            {
+                ShowText("This file does not excist");
+                return;
+            }
+            using (var file = HardDrive.Download(InputPath))
+                output = Coder.Load(file, Key);
 
             switch (outputFormat)
             {
                 case OutputFormat.ShowByLabel:
                     switch (fileType) {
                         case FileType.Text:
-                            ShowText(output);
+                            ShowText(HardDrive.ReadStream(output));
                             return;
                         case FileType.Image:
-                            LoadImage(HardDrive.Load(InputPath));
+                            LoadImage(output);
                             return;
                     }
                     return;
@@ -88,7 +91,7 @@ namespace Hippocampus.ViewModels
                         return;
                     }
                     ShowText("File saved as " + OutputPath);
-                    HardDrive.Write(OutputPath, output);
+                    HardDrive.Upload(output, OutputPath);
                     return;
             }
         }

@@ -7,6 +7,5 @@
 	
 	<StackPanel>
 		<Image Source="{Binding Image}"/>
-		<TextBlock Text="{Binding Source}"/>
 	</StackPanel>
 </UserControl>
