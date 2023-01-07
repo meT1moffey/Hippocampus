@@ -9,23 +9,17 @@ using Avalonia.Controls;
 
 namespace Hippocampus.ViewModels
 {
-    public enum OutputFormat
-    {
-        ShowByLabel = 0,
-        WriteToFile = 1,
-    }
-
-    public enum FileType
+    public enum OutputType
     {
         Text = 0,
         Image = 1,
+        File = 2,
     }
 
     public class MainWindowViewModel : ViewModelBase
     {
         string inputPath, key, outputPath, labelOutput;
-        OutputFormat outputFormat = OutputFormat.ShowByLabel;
-        FileType fileType = FileType.Text;
+        OutputType outputType = OutputType.Text;
         
         public Window win;
 
@@ -88,19 +82,15 @@ namespace Hippocampus.ViewModels
             using (var file = HardDriveService.Download(InputPath))
                 output = CoderService.Load(file, Key);
 
-            switch (outputFormat)
+            switch (outputType)
             {
-                case OutputFormat.ShowByLabel:
-                    switch (fileType) {
-                        case FileType.Text:
-                            ShowText(HardDriveService.ReadStream(output));
-                            return;
-                        case FileType.Image:
-                            ReactiveCommand.CreateFromTask(() => LoadImage(output)).Execute();
-                            return;
-                    }
+                case OutputType.Text:
+                    ShowText(HardDriveService.ReadStream(output));
                     return;
-                case OutputFormat.WriteToFile:
+                case OutputType.Image:
+                    ReactiveCommand.CreateFromTask(() => LoadImage(output)).Execute();
+                    return;
+                case OutputType.File:
                     if(string.IsNullOrEmpty(OutputPath))
                     {
                         ShowText("To save file enter it's path");
@@ -122,11 +112,8 @@ namespace Hippocampus.ViewModels
             ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
             Launch = ReactiveCommand.Create(() => ShowOutput(), okEnabled);
 
-            OutputSelected = ReactiveCommand.Create((string _outputFormat) =>
-            { Enum.TryParse(_outputFormat, out outputFormat); });
-
             TypeSelected = ReactiveCommand.Create((string _fileType) =>
-            { Enum.TryParse(_fileType, out fileType); });
+            { Enum.TryParse(_fileType, out outputType); });
 
             BrowseInput = ReactiveCommand.CreateFromTask(async() =>
                 InputPath = (await FileDialogService.ShowOpenFileDialog(win))[0]);
