@@ -10,6 +10,19 @@ namespace Hippocampus.ViewModels
     {
         string source = "C:\\Tima\\Scripti\\Hippocampus\\Hippocampus\\TestImage.png";
         Bitmap? image;
+        int width, height;
+
+        public int Width
+        {
+            get => width;
+            private set => this.RaiseAndSetIfChanged(ref width, value);
+        }
+
+        public int Height
+        {
+            get => height;
+            private set => this.RaiseAndSetIfChanged(ref height, value);
+        }
 
         public Bitmap? Image
         {
@@ -24,7 +37,10 @@ namespace Hippocampus.ViewModels
 
         public ImageWindowViewModel(Stream image)
         {
-            Image = Bitmap.DecodeToHeight(image, 720);
+            Image = Bitmap.DecodeToHeight(image, 1000);
+
+            Width = Image.PixelSize.Width;
+            Height = Image.PixelSize.Height;
         }
     }
 }

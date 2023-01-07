@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 
 namespace Hippocampus.ViewModels
 {
@@ -25,6 +26,8 @@ namespace Hippocampus.ViewModels
         string inputPath, key, outputPath, labelOutput;
         OutputFormat outputFormat = OutputFormat.ShowByLabel;
         FileType fileType = FileType.Text;
+        
+        public Window win;
 
         public string InputPath
         {
@@ -53,12 +56,23 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<Unit, Unit> Launch { get; }
         public ReactiveCommand<string, Unit> OutputSelected { get; }
         public ReactiveCommand<string, Unit> TypeSelected { get; }
+        public ReactiveCommand<Unit, string> BrowseInput { get; }
+        public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
 
         void ShowText(string text) => LabelOutput = text;
         async Task LoadImage(Stream image)
         {
-            var imageWin = new ImageWindowViewModel(image);
+            ImageWindowViewModel imageWin;
+            try
+            {
+                imageWin = new ImageWindowViewModel(image);
+            }
+            catch (NullReferenceException)
+            {
+                ShowText("Can't open image. Ensure key is correct");
+                return;
+            }
 
             await ShowDialog.Handle(imageWin);
         }
@@ -66,20 +80,20 @@ namespace Hippocampus.ViewModels
         void ShowOutput()
         {
             Stream output;
-            if(!HardDrive.FileExsist(InputPath))
+            if(!HardDriveService.FileExsist(InputPath))
             {
                 ShowText("This file does not excist");
                 return;
             }
-            using (var file = HardDrive.Download(InputPath))
-                output = Coder.Load(file, Key);
+            using (var file = HardDriveService.Download(InputPath))
+                output = CoderService.Load(file, Key);
 
             switch (outputFormat)
             {
                 case OutputFormat.ShowByLabel:
                     switch (fileType) {
                         case FileType.Text:
-                            ShowText(HardDrive.ReadStream(output));
+                            ShowText(HardDriveService.ReadStream(output));
                             return;
                         case FileType.Image:
                             ReactiveCommand.CreateFromTask(() => LoadImage(output)).Execute();
@@ -93,7 +107,7 @@ namespace Hippocampus.ViewModels
                         return;
                     }
                     ShowText("File saved as " + OutputPath);
-                    HardDrive.Upload(output, OutputPath);
+                    HardDriveService.Upload(output, OutputPath);
                     return;
             }
         }
@@ -113,6 +127,12 @@ namespace Hippocampus.ViewModels
 
             TypeSelected = ReactiveCommand.Create((string _fileType) =>
             { Enum.TryParse(_fileType, out fileType); });
+
+            BrowseInput = ReactiveCommand.CreateFromTask(async() =>
+                InputPath = (await FileDialogService.ShowOpenFileDialog(win))[0]);
+
+            BrowseOutput = ReactiveCommand.CreateFromTask(async () =>
+                OutputPath = (await FileDialogService.ShowOpenFileDialog(win))[0]);
         }
     }
 }

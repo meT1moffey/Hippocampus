@@ -23,6 +23,8 @@ namespace Hippocampus
                 {
                     DataContext = new MainWindowViewModel(),
                 };
+
+                (desktop.MainWindow.DataContext as MainWindowViewModel).win = desktop.MainWindow;
             }
         }
     }

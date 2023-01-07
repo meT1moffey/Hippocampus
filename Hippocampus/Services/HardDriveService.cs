@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Hippocampus.Services
 {
-    internal static class HardDrive
+    internal static class HardDriveService
     {
         static public bool FileExsist(string path) => File.Exists(path);
 
