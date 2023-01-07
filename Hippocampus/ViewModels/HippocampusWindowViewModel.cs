@@ -1,4 +1,5 @@
 using ReactiveUI;
+using System.IO;
 
 namespace Hippocampus.ViewModels
 {
@@ -19,9 +20,9 @@ namespace Hippocampus.ViewModels
             Content = main = new MainViewModel(this);
         }
 
-        public void ShowImage()
+        public void ShowImage(Stream image)
         {
-            Content = new ImageViewModel();
+            Content = new ImageViewModel(image);
         }
     }
 }

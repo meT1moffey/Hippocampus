@@ -2,6 +2,9 @@
 using System.Reactive;
 using Hippocampus.Services;
 using System;
+using System.IO;
+using Avalonia.Controls.Shapes;
+using System.Text;
 
 namespace Hippocampus.ViewModels
 {
@@ -53,10 +56,9 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<string, Unit> TypeSelected { get; }
 
         void ShowText(string text) => LabelOutput = text;
-
-        void ShowImage(string image)
+        void LoadImage(Stream image)
         {
-            win.ShowImage();
+            win.ShowImage(image);
         }
 
         void ShowOutput()
@@ -75,7 +77,7 @@ namespace Hippocampus.ViewModels
                             ShowText(output);
                             return;
                         case FileType.Image:
-                            ShowImage(output);
+                            LoadImage(HardDrive.Load(InputPath));
                             return;
                     }
                     return;

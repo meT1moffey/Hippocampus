@@ -32,5 +32,22 @@ namespace Hippocampus.Services
                 fs.Write(info, 0, info.Length);
             }
         }
+
+        static public Stream Load(string path) => File.OpenRead(path);
+
+        static public string ReadStream(Stream stream)
+        {
+            string data = "";
+
+            using (Stream s = stream)
+            {
+                byte[] buffer = new byte[s.Length];
+
+                while (s.Read(buffer, 0, buffer.Length) > 0)
+                    data += new UTF8Encoding(true).GetString(buffer);
+            }
+
+            return data;
+        }
     }
 }
