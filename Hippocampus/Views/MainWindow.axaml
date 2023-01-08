@@ -12,12 +12,21 @@
 			<TextBox AcceptsReturn="False" Text="{Binding InputPathText}" Watermark="Input file path"/>
 		</DockPanel>
 		<TextBox AcceptsReturn="False" Text="{Binding Key}" Watermark="Key" PasswordChar="*"/>
-		
+
+		<!--
 		<StackPanel Orientation="Horizontal" Spacing="20">
 			<RadioButton IsChecked="True" GroupName="Type" Content="Text" Command="{Binding TypeSelected}" CommandParameter="Text"/>
 			<RadioButton GroupName="Type" Content="Image" Command="{Binding TypeSelected}" CommandParameter="Image"/>
 			<RadioButton GroupName="Type" Content="File" Command="{Binding TypeSelected}" CommandParameter="File"/>
-		</StackPanel>
+		</StackPanel>-->
+
+		<ListBox Items="{Binding GetOptions}" SelectedItem="{Binding SelectedOutputVM}">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+		</ListBox>
 		
 		<DockPanel>
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseOutput}"/>

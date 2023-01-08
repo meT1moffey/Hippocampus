@@ -7,13 +7,14 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Hippocampus.Models;
+using System.Collections.ObjectModel;
 
 namespace Hippocampus.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
         string inputPathText, outputPathText, key, labelOutput;
-        OutputFormat outputFormat;
+        OutputOptionViewModel selectedOutputVM;
         
         public Window win;
 
@@ -47,17 +48,52 @@ namespace Hippocampus.ViewModels
             get => labelOutput;
             set => this.RaiseAndSetIfChanged(ref labelOutput, value);
         }
+        public OutputOptionViewModel SelectedOutputVM
+        {
+            get => selectedOutputVM;
+            set => this.RaiseAndSetIfChanged(ref selectedOutputVM, value);
+        }
+        public OutputOptionEnum SelectedOutput
+        {
+            get => selectedOutputVM.GetOption();
+        }
         public ReactiveCommand<Unit, Unit> Launch { get; }
-        public ReactiveCommand<string, OutputFormat> TypeSelected { get; }
+        public ReactiveCommand<string, OutputOption> TypeSelected { get; }
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
+        public ObservableCollection<OutputOptionViewModel> GetOptions { get; } = new();
 
-        public async Task<string> ShowFileBrowser()
+        void LoadOptions()
+        {
+            GetOptions.Clear();
+
+            foreach(OutputOption o in OutputOption.GetAllOptions())
+            {
+                var vm = new OutputOptionViewModel(o);
+
+                GetOptions.Add(vm);
+            }
+
+            SelectedOutputVM = GetOptions[0];
+        }
+
+        async Task<string> ShowFileBrowser()
             => (await new OpenFileDialog().ShowAsync(win))[0];
 
-        void ShowText(string text) => LabelOutput = text;
-        async Task ShowImage(Stream image)
+        Stream LoadOutput()
+        {
+            if (!InputPath.Exists())
+            {
+                throw new FileNotFoundException("Input file does not exsist");
+            }
+            using (var file = InputPath.Download())
+                return CoderService.Load(file, Key);
+        }
+
+        void ShowText() => LabelOutput = CoderService.ReadStream(LoadOutput());
+
+        async Task OpenImage(Stream image)
         {
             ImageWindowViewModel imageWin;
             try
@@ -66,45 +102,38 @@ namespace Hippocampus.ViewModels
             }
             catch (NullReferenceException)
             {
-                ShowText("Can't open image. Ensure key is correct");
+                LabelOutput = "Can't open image. Ensure key is correct";
                 return;
             }
 
             await ShowDialog.Handle(imageWin);
         }
 
-        Stream LoadOutput()
-        {
-            if (!((FilePath)InputPath).Exists())
-            {
-                throw new FileNotFoundException("Input file does not exsist");
-            }
-            using (var file = ((FilePath)InputPath).Download())
-                return CoderService.Load(file, Key);
-        }
+        void ShowImage()
+            => ReactiveCommand.CreateFromTask(() => OpenImage(LoadOutput())).Execute();
 
         void SaveOutputToFile()
         {
             if (OutputPath.Empty())
             {
-                ShowText("To save file enter it's path");
+                LabelOutput = "To save file enter it's path";
                 return;
             }
-            ShowText("File saved as " + OutputPathText);
+            LabelOutput = "File saved as " + OutputPathText;
             OutputPath.Upload(LoadOutput());
         }
 
         void ShowOutput()
         {
-            switch (outputFormat.format)
+            switch (SelectedOutput)
             {
-                case FormatEnum.Text:
-                    ShowText(CoderService.ReadStream(LoadOutput()));
+                case OutputOptionEnum.Text:
+                    ShowText();
                     return;
-                case FormatEnum.Image:
-                    ReactiveCommand.CreateFromTask(() => ShowImage(LoadOutput())).Execute();
+                case OutputOptionEnum.Image:
+                    ShowImage();
                     return;
-                case FormatEnum.File:
+                case OutputOptionEnum.File:
                     SaveOutputToFile();
                     return;
             }
@@ -117,13 +146,13 @@ namespace Hippocampus.ViewModels
 
             Launch = ReactiveCommand.Create(() => ShowOutput(), ready);
 
-            TypeSelected = ReactiveCommand.Create((string format) => outputFormat = format);
-
             BrowseInput = ReactiveCommand.CreateFromTask(async ()
                 => InputPathText = await ShowFileBrowser());
 
             BrowseOutput = ReactiveCommand.CreateFromTask(async ()
                 => OutputPathText = await ShowFileBrowser());
+
+            LoadOptions();
         }
     }
 }
