@@ -10,36 +10,37 @@ using Hippocampus.Models;
 
 namespace Hippocampus.ViewModels
 {
-    public enum OutputType
-    {
-        Text = 0,
-        Image = 1,
-        File = 2,
-    }
-
     public class MainWindowViewModel : ViewModelBase
     {
-        string inputPath;
-        string outputPath;
-        string key, labelOutput;
-        OutputType outputType = OutputType.Text;
+        string inputPathText, outputPathText, key, labelOutput;
+        OutputFormat outputFormat;
         
         public Window win;
 
-        public string InputPath
+        public string InputPathText
         {
-            get => inputPath;
-            set => this.RaiseAndSetIfChanged(ref inputPath, value);
+            get => inputPathText;
+            set => this.RaiseAndSetIfChanged(ref inputPathText, value);
         }
+
+        public FilePath InputPath
+        {
+            get => (FilePath)inputPathText;
+        }
+
         public string Key
         {
             get => key;
             set => this.RaiseAndSetIfChanged(ref key, value);
         }
-        public string OutputPath
+        public string OutputPathText
         {
-            get => outputPath;
-            set => this.RaiseAndSetIfChanged(ref outputPath, value);
+            get => outputPathText;
+            set => this.RaiseAndSetIfChanged(ref outputPathText, value);
+        }
+        public FilePath OutputPath
+        {
+            get => (FilePath)OutputPathText;
         }
         public string LabelOutput
         {
@@ -47,13 +48,13 @@ namespace Hippocampus.ViewModels
             set => this.RaiseAndSetIfChanged(ref labelOutput, value);
         }
         public ReactiveCommand<Unit, Unit> Launch { get; }
-        public ReactiveCommand<string, Unit> TypeSelected { get; }
+        public ReactiveCommand<string, OutputFormat> TypeSelected { get; }
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
 
-        static public Task<string[]?> ShowFileBrowser(Window parent)
-            => new OpenFileDialog().ShowAsync(parent);
+        public async Task<string> ShowFileBrowser()
+            => (await new OpenFileDialog().ShowAsync(win))[0];
 
         void ShowText(string text) => LabelOutput = text;
         async Task ShowImage(Stream image)
@@ -84,26 +85,26 @@ namespace Hippocampus.ViewModels
 
         void SaveOutputToFile()
         {
-            if (((FilePath)OutputPath).Empty())
+            if (OutputPath.Empty())
             {
                 ShowText("To save file enter it's path");
                 return;
             }
-            ShowText("File saved as " + OutputPath);
-            ((FilePath)OutputPath).Upload(LoadOutput());
+            ShowText("File saved as " + OutputPathText);
+            OutputPath.Upload(LoadOutput());
         }
 
         void ShowOutput()
         {
-            switch (outputType)
+            switch (outputFormat.format)
             {
-                case OutputType.Text:
+                case FormatEnum.Text:
                     ShowText(CoderService.ReadStream(LoadOutput()));
                     return;
-                case OutputType.Image:
+                case FormatEnum.Image:
                     ReactiveCommand.CreateFromTask(() => ShowImage(LoadOutput())).Execute();
                     return;
-                case OutputType.File:
+                case FormatEnum.File:
                     SaveOutputToFile();
                     return;
             }
@@ -112,18 +113,17 @@ namespace Hippocampus.ViewModels
         public MainWindowViewModel()
         {
             ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
-            var ready = this.WhenAnyValue(m => m.InputPath, i => ((FilePath)i).Exists());
+            var ready = this.WhenAnyValue(m => m.InputPathText, i => ((FilePath)i).Exists());
 
             Launch = ReactiveCommand.Create(() => ShowOutput(), ready);
 
-            TypeSelected = ReactiveCommand.Create((string _fileType) =>
-            { Enum.TryParse(_fileType, out outputType); });
+            TypeSelected = ReactiveCommand.Create((string format) => outputFormat = format);
 
-            BrowseInput = ReactiveCommand.CreateFromTask(async() =>
-                InputPath = (await ShowFileBrowser(win))[0]);
+            BrowseInput = ReactiveCommand.CreateFromTask(async ()
+                => InputPathText = await ShowFileBrowser());
 
-            BrowseOutput = ReactiveCommand.CreateFromTask(async () =>
-                OutputPath = (await ShowFileBrowser(win))[0]);
+            BrowseOutput = ReactiveCommand.CreateFromTask(async ()
+                => OutputPathText = await ShowFileBrowser());
         }
     }
 }
