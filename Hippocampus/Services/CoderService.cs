@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 
 namespace Hippocampus.Services
 {
@@ -20,6 +21,21 @@ namespace Hippocampus.Services
             stream.Position = 0;
 
             return stream;
+        }
+
+        static public string ReadStream(Stream stream)
+        {
+            string data = "";
+
+            using (Stream s = stream)
+            {
+                byte[] buffer = new byte[stream.Length];
+
+                while (s.Read(buffer, 0, buffer.Length) > 0)
+                    data += new UTF8Encoding(true).GetString(buffer);
+            }
+
+            return data;
         }
     }
 }

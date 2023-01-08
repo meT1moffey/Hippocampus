@@ -5,6 +5,7 @@
         Width="800" Height="300"
         Title="Hippocampus"
 		CanResize="False">
+	
     <StackPanel Spacing="10">
 		<DockPanel>
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseInput}"/>

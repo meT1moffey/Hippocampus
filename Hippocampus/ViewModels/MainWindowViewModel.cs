@@ -6,6 +6,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Hippocampus.Models;
 
 namespace Hippocampus.ViewModels
 {
@@ -18,7 +19,9 @@ namespace Hippocampus.ViewModels
 
     public class MainWindowViewModel : ViewModelBase
     {
-        string inputPath, key, outputPath, labelOutput;
+        string inputPath;
+        string outputPath;
+        string key, labelOutput;
         OutputType outputType = OutputType.Text;
         
         public Window win;
@@ -28,31 +31,29 @@ namespace Hippocampus.ViewModels
             get => inputPath;
             set => this.RaiseAndSetIfChanged(ref inputPath, value);
         }
-
         public string Key
         {
             get => key;
             set => this.RaiseAndSetIfChanged(ref key, value);
         }
-
         public string OutputPath
         {
             get => outputPath;
             set => this.RaiseAndSetIfChanged(ref outputPath, value);
         }
-
         public string LabelOutput
         {
             get => labelOutput;
             set => this.RaiseAndSetIfChanged(ref labelOutput, value);
         }
-
         public ReactiveCommand<Unit, Unit> Launch { get; }
-        public ReactiveCommand<string, Unit> OutputSelected { get; }
         public ReactiveCommand<string, Unit> TypeSelected { get; }
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
+
+        static public Task<string[]?> ShowFileBrowser(Window parent)
+            => new OpenFileDialog().ShowAsync(parent);
 
         void ShowText(string text) => LabelOutput = text;
         async Task ShowImage(Stream image)
@@ -73,23 +74,23 @@ namespace Hippocampus.ViewModels
 
         Stream LoadOutput()
         {
-            if (!HardDriveService.FileExsist(InputPath))
+            if (!((FilePath)InputPath).Exists())
             {
                 throw new FileNotFoundException("Input file does not exsist");
             }
-            using (var file = HardDriveService.Download(InputPath))
+            using (var file = ((FilePath)InputPath).Download())
                 return CoderService.Load(file, Key);
         }
 
         void SaveOutputToFile()
         {
-            if (string.IsNullOrEmpty(OutputPath))
+            if (((FilePath)OutputPath).Empty())
             {
                 ShowText("To save file enter it's path");
                 return;
             }
             ShowText("File saved as " + OutputPath);
-            HardDriveService.Upload(LoadOutput(), OutputPath);
+            ((FilePath)OutputPath).Upload(LoadOutput());
         }
 
         void ShowOutput()
@@ -97,7 +98,7 @@ namespace Hippocampus.ViewModels
             switch (outputType)
             {
                 case OutputType.Text:
-                    ShowText(HardDriveService.ReadStream(LoadOutput()));
+                    ShowText(CoderService.ReadStream(LoadOutput()));
                     return;
                 case OutputType.Image:
                     ReactiveCommand.CreateFromTask(() => ShowImage(LoadOutput())).Execute();
@@ -110,19 +111,19 @@ namespace Hippocampus.ViewModels
 
         public MainWindowViewModel()
         {
-            var ready = this.WhenAnyValue(m => m.InputPath, i => HardDriveService.FileExsist(i));
-
             ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
+            var ready = this.WhenAnyValue(m => m.InputPath, i => ((FilePath)i).Exists());
+
             Launch = ReactiveCommand.Create(() => ShowOutput(), ready);
 
             TypeSelected = ReactiveCommand.Create((string _fileType) =>
             { Enum.TryParse(_fileType, out outputType); });
 
             BrowseInput = ReactiveCommand.CreateFromTask(async() =>
-                InputPath = (await FileDialogService.ShowOpenFileDialog(win))[0]);
+                InputPath = (await ShowFileBrowser(win))[0]);
 
             BrowseOutput = ReactiveCommand.CreateFromTask(async () =>
-                OutputPath = (await FileDialogService.ShowOpenFileDialog(win))[0]);
+                OutputPath = (await ShowFileBrowser(win))[0]);
         }
     }
 }
