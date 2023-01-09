@@ -34,5 +34,8 @@
     <Compile Update="Views\ImageWindow.axaml.cs">
       <DependentUpon>ImageWindow.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\OutputFormatView.axaml.cs">
+      <DependentUpon>OutputFormatView.axaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

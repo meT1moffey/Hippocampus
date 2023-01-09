@@ -13,7 +13,7 @@
 		</DockPanel>
 		<TextBox AcceptsReturn="False" Text="{Binding Key}" Watermark="Key" PasswordChar="*"/>
 
-		<ListBox Items="{Binding GetOptions}" SelectedItem="{Binding SelectedOption}">
+		<ListBox Items="{Binding GetOutputFormats}" SelectedItem="{Binding SelectedOutputFormat}">
 			<ListBox.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel />

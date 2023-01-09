@@ -3,7 +3,7 @@ using System;
 
 namespace Hippocampus.Models.OutputOptions
 {
-    public class ImageOutput : OutputOption
+    public class ImageOutput : OutputFormat
     {
         public Action<ImageWindowViewModel> ShowImageWindow { get; }
 

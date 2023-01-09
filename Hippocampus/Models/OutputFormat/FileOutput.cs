@@ -2,7 +2,7 @@
 
 namespace Hippocampus.Models.OutputOptions
 {
-    public class FileOutput : OutputOption
+    public class FileOutput : OutputFormat
     {
         Func<FilePath> GetOutputPath;
 

@@ -4,14 +4,14 @@ using System.IO;
 
 namespace Hippocampus.Models.OutputOptions
 {
-    public abstract class OutputOption
+    public abstract class OutputFormat
     {
         Func<FilePath> GetInputPath;
         Func<string> GetKey;
 
         protected Action<string> EditLabel;
 
-        public OutputOption(BaseOutputConfig config)
+        public OutputFormat(BaseOutputConfig config)
         {
             GetInputPath = config.GetInputPath;
             GetKey = config.GetKey;

@@ -15,13 +15,13 @@ namespace Hippocampus.ViewModels
         #region Varibles
         string inputPath, outputPath, key, labelOutput;
         bool requestOutputPath;
-        OutputOptionViewModel option;
+        OutputFormatViewModel outputFormat;
 
         public Window win;
         #endregion
 
         #region Properties
-        OutputOption[] OutputOptions
+        OutputFormat[] OutputFormats
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Hippocampus.ViewModels
                 Func<string> GetKey = () => Key;
                 BaseOutputConfig config = new(SetLabel, GetInputPath, GetKey);
 
-                return new OutputOption[] {
+                return new OutputFormat[] {
                     new TextOutput(config),
                     new ImageOutput(config, ShowImageWindow),
                     new FileOutput(config, GetOutputPath)
@@ -60,17 +60,17 @@ namespace Hippocampus.ViewModels
             get => labelOutput;
             set => this.RaiseAndSetIfChanged(ref labelOutput, value);
         }
-        public OutputOption Output
+        public OutputFormat Output
         {
-            get => option.GetOption();
+            get => outputFormat.GetOption();
         }
-        public OutputOptionViewModel SelectedOption
+        public OutputFormatViewModel SelectedOutputFormat
         {
-            get => option;
+            get => outputFormat;
             set
             {
-                this.RaiseAndSetIfChanged(ref option, value);
-                RequestOutputPath = option.GetOption().RequestOutputPath();
+                this.RaiseAndSetIfChanged(ref outputFormat, value);
+                RequestOutputPath = outputFormat.GetOption().RequestOutputPath();
             }
         }
         public bool RequestOutputPath
@@ -85,22 +85,22 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ImageWindowInteraction { get; }
-        public ObservableCollection<OutputOptionViewModel> GetOptions { get; } = new();
+        public ObservableCollection<OutputFormatViewModel> GetOutputFormats { get; } = new();
         #endregion
 
         #region Methods
-        void LoadOptions()
+        void LoadOutputFormats()
         {
-            GetOptions.Clear();
+            GetOutputFormats.Clear();
 
-            foreach(OutputOption o in OutputOptions)
+            foreach(OutputFormat o in OutputFormats)
             {
-                var vm = new OutputOptionViewModel(o);
+                var vm = new OutputFormatViewModel(o);
 
-                GetOptions.Add(vm);
+                GetOutputFormats.Add(vm);
             }
 
-            SelectedOption = GetOptions[0];
+            SelectedOutputFormat = GetOutputFormats[0];
         }
 
         async Task<string?> ShowFileBrowser()
@@ -128,7 +128,7 @@ namespace Hippocampus.ViewModels
             BrowseOutput = ReactiveCommand.CreateFromTask(async ()
                 => OutputPath = await ShowFileBrowser() ?? OutputPath);
 
-            LoadOptions();
+            LoadOutputFormats();
         }
     }
 }
