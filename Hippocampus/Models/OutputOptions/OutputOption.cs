@@ -9,13 +9,13 @@ namespace Hippocampus.Models.OutputOptions
         Func<FilePath> GetInputPath;
         Func<string> GetKey;
 
-        protected Action<string> SetLabel;
+        protected Action<string> EditLabel;
 
         public OutputOption(BaseOutputConfig config)
         {
             GetInputPath = config.GetInputPath;
             GetKey = config.GetKey;
-            SetLabel = config.SetLabel;
+            EditLabel = config.EditLabel;
         }
         protected Stream LoadOutput()
         {
@@ -29,17 +29,18 @@ namespace Hippocampus.Models.OutputOptions
 
         public abstract void ShowOutput();
         public abstract string GetName();
+        public virtual bool RequestOutputPath() => false;
     }
 
     public struct BaseOutputConfig
     {
-        public Action<string> SetLabel { get; set; }
+        public Action<string> EditLabel { get; set; }
         public Func<FilePath> GetInputPath { get; set; }
         public Func<string> GetKey { get; set; }
 
         public BaseOutputConfig(Action<string> _SetLabel, Func<FilePath> _GetInputPath, Func<string> _GetKey)
          {
-            SetLabel = _SetLabel;
+            EditLabel = _SetLabel;
             GetInputPath = _GetInputPath;
             GetKey = _GetKey;
         }

@@ -21,7 +21,7 @@
 			</ListBox.ItemsPanel>
 		</ListBox>
 		
-		<DockPanel>
+		<DockPanel IsVisible="{Binding RequestOutputPath}">
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseOutput}"/>
 			<TextBox AcceptsReturn="False" Text="{Binding OutputPath}" Watermark="Output file path"/>
 		</DockPanel>

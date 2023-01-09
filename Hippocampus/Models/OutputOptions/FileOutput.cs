@@ -13,13 +13,14 @@ namespace Hippocampus.Models.OutputOptions
         {
             if (GetOutputPath().Empty())
             {
-                SetLabel("To save file enter it's path");
+                EditLabel("To save file enter it's path");
                 return;
             }
-            SetLabel("File saved as " + GetOutputPath());
+            EditLabel("File saved as " + GetOutputPath());
             GetOutputPath().Upload(LoadOutput());
         }
 
         public override string GetName() => "File";
+        public override bool RequestOutputPath() => true;
     }
 }

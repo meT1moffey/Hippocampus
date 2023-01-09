@@ -4,8 +4,6 @@ using Hippocampus.Models.OutputOptions;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq.Expressions;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -15,7 +13,8 @@ namespace Hippocampus.ViewModels
     public class MainWindowViewModel : ViewModelBase
     {
         #region Varibles
-        string inputPathText, outputPath, key, labelOutput;
+        string inputPath, outputPath, key, labelOutput;
+        bool requestOutputPath;
         OutputOptionViewModel option;
 
         public Window win;
@@ -42,8 +41,8 @@ namespace Hippocampus.ViewModels
         }
         public string InputPath
         {
-            get => inputPathText;
-            set => this.RaiseAndSetIfChanged(ref inputPathText, value);
+            get => inputPath;
+            set => this.RaiseAndSetIfChanged(ref inputPath, value);
         }
 
         public string Key
@@ -68,7 +67,16 @@ namespace Hippocampus.ViewModels
         public OutputOptionViewModel SelectedOption
         {
             get => option;
-            set => this.RaiseAndSetIfChanged(ref option, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref option, value);
+                RequestOutputPath = option.GetOption().RequestOutputPath();
+            }
+        }
+        public bool RequestOutputPath
+        {
+            get => requestOutputPath;
+            set => this.RaiseAndSetIfChanged(ref requestOutputPath, value);
         }
         #endregion
 

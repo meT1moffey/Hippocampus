@@ -18,7 +18,7 @@ namespace Hippocampus.Models.OutputOptions
             }
             catch (NullReferenceException)
             {
-                SetLabel("Can't open image. Ensure key is correct");
+                EditLabel("Can't open image. Ensure key is correct");
                 return;
             }
             ShowImageWindow(imageWin);
