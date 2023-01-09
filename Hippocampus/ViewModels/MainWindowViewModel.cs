@@ -103,14 +103,17 @@ namespace Hippocampus.ViewModels
             SelectedOption = GetOptions[0];
         }
 
-        async Task<string> ShowFileBrowser()
-            => (await new OpenFileDialog().ShowAsync(win))[0];
+        async Task<string?> ShowFileBrowser()
+        {
+            string[]? browsedFile = await new OpenFileDialog().ShowAsync(win);
+            if (browsedFile != null) return browsedFile[0];
+            else return null;
+        }
 
         public void OpenImageWindow(ImageWindowViewModel imageWin)
             => ReactiveCommand.CreateFromTask(async ()
                 => await ImageWindowInteraction.Handle(imageWin)).Execute();
         #endregion
-
 
         public MainWindowViewModel()
         {
@@ -120,10 +123,10 @@ namespace Hippocampus.ViewModels
             Launch = ReactiveCommand.Create(() => Output.ShowOutput(), ready);
 
             BrowseInput = ReactiveCommand.CreateFromTask(async ()
-                => InputPath = await ShowFileBrowser());
+                => InputPath = await ShowFileBrowser() ?? InputPath);
 
             BrowseOutput = ReactiveCommand.CreateFromTask(async ()
-                => OutputPath = await ShowFileBrowser());
+                => OutputPath = await ShowFileBrowser() ?? OutputPath);
 
             LoadOptions();
         }
