@@ -9,18 +9,11 @@
     <StackPanel Spacing="10">
 		<DockPanel>
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseInput}"/>
-			<TextBox AcceptsReturn="False" Text="{Binding InputPathText}" Watermark="Input file path"/>
+			<TextBox AcceptsReturn="False" Text="{Binding InputPath}" Watermark="Input file path"/>
 		</DockPanel>
 		<TextBox AcceptsReturn="False" Text="{Binding Key}" Watermark="Key" PasswordChar="*"/>
 
-		<!--
-		<StackPanel Orientation="Horizontal" Spacing="20">
-			<RadioButton IsChecked="True" GroupName="Type" Content="Text" Command="{Binding TypeSelected}" CommandParameter="Text"/>
-			<RadioButton GroupName="Type" Content="Image" Command="{Binding TypeSelected}" CommandParameter="Image"/>
-			<RadioButton GroupName="Type" Content="File" Command="{Binding TypeSelected}" CommandParameter="File"/>
-		</StackPanel>-->
-
-		<ListBox Items="{Binding GetOptions}" SelectedItem="{Binding SelectedOutputVM}">
+		<ListBox Items="{Binding GetOptions}" SelectedItem="{Binding SelectedOption}">
 			<ListBox.ItemsPanel>
 				<ItemsPanelTemplate>
 					<WrapPanel />
@@ -30,7 +23,7 @@
 		
 		<DockPanel>
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseOutput}"/>
-			<TextBox AcceptsReturn="False" Text="{Binding OutputPathText}" Watermark="Output file path"/>
+			<TextBox AcceptsReturn="False" Text="{Binding OutputPath}" Watermark="Output file path"/>
 		</DockPanel>
 		<Button Command="{Binding Launch}">Launch</Button>
 		<TextBlock Text="{Binding LabelOutput}" TextWrapping="Wrap"/>

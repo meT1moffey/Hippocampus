@@ -1,4 +1,4 @@
-﻿using Hippocampus.Models;
+﻿using Hippocampus.Models.OutputOptions;
 
 namespace Hippocampus.ViewModels
 {
@@ -7,12 +7,12 @@ namespace Hippocampus.ViewModels
         OutputOption option;
         public string OptionName
         {
-            get => option.option.ToString();
+            get => option.GetName();
         }
 
         public OutputOptionViewModel(OutputOption _option) => option = _option;
 
-        public OutputOptionEnum GetOption() => option.option;
+        public OutputOption GetOption() => option;
 
     }
 }
