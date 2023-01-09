@@ -28,10 +28,10 @@ namespace Hippocampus.ViewModels
             {
                 Action<string> SetLabel = (label) => LabelOutput = label;
                 Action<ImageWindowViewModel> ShowImageWindow = (vm) => OpenImageWindow(vm);
-                Func<DirectoryPath> GetInputPath = () => new DirectoryPath(InputPath),
-                    GetOutputPath = () => new DirectoryPath(OutputPath);
+                Func<FileLocation> GetInputFile = () => { Input.Location = InputPath; return Input; };
+                Func<DirectoryPath> GetOutputPath = () => new DirectoryPath(OutputPath);
                 Func<string> GetKey = () => Key;
-                BaseOutputConfig config = new(SetLabel, GetInputPath, GetKey);
+                BaseOutputConfig config = new(SetLabel, GetInputFile, GetKey);
 
                 return new OutputFormat[] {
                     new TextOutput(config),

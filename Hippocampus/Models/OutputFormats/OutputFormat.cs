@@ -7,24 +7,24 @@ namespace Hippocampus.Models.OutputFormats
 {
     public abstract class OutputFormat
     {
-        Func<DirectoryPath> GetInputPath;
+        Func<FileLocation> GetInputFile;
         Func<string> GetKey;
 
         protected Action<string> EditLabel;
 
         public OutputFormat(BaseOutputConfig config)
         {
-            GetInputPath = config.GetInputPath;
+            GetInputFile = config.GetInputFile;
             GetKey = config.GetKey;
             EditLabel = config.EditLabel;
         }
         protected Stream LoadOutput()
         {
-            if (!GetInputPath().Exists())
+            if (!GetInputFile().Exists())
             {
                 throw new FileNotFoundException("Input file does not exsist");
             }
-            using (var file = GetInputPath().Download())
+            using (var file = GetInputFile().Download())
                 return CoderService.Load(file, GetKey());
         }
 
@@ -36,13 +36,13 @@ namespace Hippocampus.Models.OutputFormats
     public struct BaseOutputConfig
     {
         public Action<string> EditLabel { get; set; }
-        public Func<DirectoryPath> GetInputPath { get; set; }
+        public Func<FileLocation> GetInputFile { get; set; }
         public Func<string> GetKey { get; set; }
 
-        public BaseOutputConfig(Action<string> _SetLabel, Func<DirectoryPath> _GetInputPath, Func<string> _GetKey)
+        public BaseOutputConfig(Action<string> _SetLabel, Func<FileLocation> _GetInputFile, Func<string> _GetKey)
          {
             EditLabel = _SetLabel;
-            GetInputPath = _GetInputPath;
+            GetInputFile = _GetInputFile;
             GetKey = _GetKey;
         }
     }
