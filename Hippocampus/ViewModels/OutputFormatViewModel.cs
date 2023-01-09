@@ -1,4 +1,4 @@
-﻿using Hippocampus.Models.OutputOptions;
+﻿using Hippocampus.Models.OutputFormats;
 
 namespace Hippocampus.ViewModels
 {
@@ -12,7 +12,7 @@ namespace Hippocampus.ViewModels
 
         public OutputFormatViewModel(OutputFormat _format) => format = _format;
 
-        public OutputFormat GetOption() => format;
+        public OutputFormat GetFormat() => format;
 
     }
 }

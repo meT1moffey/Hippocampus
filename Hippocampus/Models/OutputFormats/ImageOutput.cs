@@ -1,7 +1,7 @@
 ﻿using Hippocampus.ViewModels;
 using System;
 
-namespace Hippocampus.Models.OutputOptions
+namespace Hippocampus.Models.OutputFormats
 {
     public class ImageOutput : OutputFormat
     {

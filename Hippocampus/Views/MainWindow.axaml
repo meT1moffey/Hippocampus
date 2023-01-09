@@ -7,6 +7,14 @@
 		CanResize="False">
 	
     <StackPanel Spacing="10">
+		<ListBox Items="{Binding GetInputFormats}" SelectedItem="{Binding SelectedInputFormat}">
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel />
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+		</ListBox>
+		
 		<DockPanel>
 			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseInput}"/>
 			<TextBox AcceptsReturn="False" Text="{Binding InputPath}" Watermark="Input file path"/>

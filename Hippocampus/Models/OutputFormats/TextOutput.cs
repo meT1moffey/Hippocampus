@@ -1,7 +1,7 @@
 ﻿using Hippocampus.Services;
 using System;
 
-namespace Hippocampus.Models.OutputOptions
+namespace Hippocampus.Models.OutputFormats
 {
     public class TextOutput : OutputFormat
     {

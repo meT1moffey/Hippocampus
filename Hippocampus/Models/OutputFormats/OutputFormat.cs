@@ -1,12 +1,13 @@
-﻿using Hippocampus.Services;
+﻿using Hippocampus.Models.FileLocations;
+using Hippocampus.Services;
 using System;
 using System.IO;
 
-namespace Hippocampus.Models.OutputOptions
+namespace Hippocampus.Models.OutputFormats
 {
     public abstract class OutputFormat
     {
-        Func<FilePath> GetInputPath;
+        Func<DirectoryPath> GetInputPath;
         Func<string> GetKey;
 
         protected Action<string> EditLabel;
@@ -35,10 +36,10 @@ namespace Hippocampus.Models.OutputOptions
     public struct BaseOutputConfig
     {
         public Action<string> EditLabel { get; set; }
-        public Func<FilePath> GetInputPath { get; set; }
+        public Func<DirectoryPath> GetInputPath { get; set; }
         public Func<string> GetKey { get; set; }
 
-        public BaseOutputConfig(Action<string> _SetLabel, Func<FilePath> _GetInputPath, Func<string> _GetKey)
+        public BaseOutputConfig(Action<string> _SetLabel, Func<DirectoryPath> _GetInputPath, Func<string> _GetKey)
          {
             EditLabel = _SetLabel;
             GetInputPath = _GetInputPath;

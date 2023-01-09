@@ -1,6 +1,6 @@
 ﻿using Avalonia.Controls;
-using Hippocampus.Models;
-using Hippocampus.Models.OutputOptions;
+using Hippocampus.Models.FileLocations;
+using Hippocampus.Models.OutputFormats;
 using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
@@ -14,8 +14,9 @@ namespace Hippocampus.ViewModels
     {
         #region Varibles
         string inputPath, outputPath, key, labelOutput;
-        bool requestOutputPath;
+        bool requestOutputPath, allowBrowseInput;
         OutputFormatViewModel outputFormat;
+        InputFormatViewModel inputFormat;
 
         public Window win;
         #endregion
@@ -27,8 +28,8 @@ namespace Hippocampus.ViewModels
             {
                 Action<string> SetLabel = (label) => LabelOutput = label;
                 Action<ImageWindowViewModel> ShowImageWindow = (vm) => OpenImageWindow(vm);
-                Func<FilePath> GetInputPath = () => (FilePath)InputPath,
-                    GetOutputPath = () => (FilePath)OutputPath;
+                Func<DirectoryPath> GetInputPath = () => new DirectoryPath(InputPath),
+                    GetOutputPath = () => new DirectoryPath(OutputPath);
                 Func<string> GetKey = () => Key;
                 BaseOutputConfig config = new(SetLabel, GetInputPath, GetKey);
 
@@ -36,6 +37,16 @@ namespace Hippocampus.ViewModels
                     new TextOutput(config),
                     new ImageOutput(config, ShowImageWindow),
                     new FileOutput(config, GetOutputPath)
+                };
+            }
+        }
+
+        FileLocation[] InputFormats
+        {
+            get
+            {
+                return new FileLocation[] {
+                    new DirectoryPath()
                 };
             }
         }
@@ -62,7 +73,7 @@ namespace Hippocampus.ViewModels
         }
         public OutputFormat Output
         {
-            get => outputFormat.GetOption();
+            get => outputFormat.GetFormat();
         }
         public OutputFormatViewModel SelectedOutputFormat
         {
@@ -70,13 +81,31 @@ namespace Hippocampus.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref outputFormat, value);
-                RequestOutputPath = outputFormat.GetOption().RequestOutputPath();
+                RequestOutputPath = outputFormat.GetFormat().RequestOutputPath();
+            }
+        }
+        public FileLocation Input
+        {
+            get => inputFormat.GetFormat();
+        }
+        public InputFormatViewModel SelectedInputFormat
+        {
+            get => inputFormat;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref inputFormat, value);
+                AllowBrowseInput = inputFormat.GetFormat().AllowBrowseInput();
             }
         }
         public bool RequestOutputPath
         {
             get => requestOutputPath;
             set => this.RaiseAndSetIfChanged(ref requestOutputPath, value);
+        }
+        public bool AllowBrowseInput
+        {
+            get => allowBrowseInput;
+            set => this.RaiseAndSetIfChanged(ref allowBrowseInput, value);
         }
         #endregion
 
@@ -86,6 +115,7 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
         public Interaction<ImageWindowViewModel, MainWindowViewModel?> ImageWindowInteraction { get; }
         public ObservableCollection<OutputFormatViewModel> GetOutputFormats { get; } = new();
+        public ObservableCollection<InputFormatViewModel> GetInputFormats { get; } = new();
         #endregion
 
         #region Methods
@@ -103,6 +133,20 @@ namespace Hippocampus.ViewModels
             SelectedOutputFormat = GetOutputFormats[0];
         }
 
+        void LoadInputFormats()
+        {
+            GetInputFormats.Clear();
+
+            foreach (FileLocation i in InputFormats)
+            {
+                var vm = new InputFormatViewModel(i);
+
+                GetInputFormats.Add(vm);
+            }
+
+            SelectedInputFormat = GetInputFormats[0];
+        }
+
         async Task<string?> ShowFileBrowser()
         {
             string[]? browsedFile = await new OpenFileDialog().ShowAsync(win);
@@ -118,7 +162,7 @@ namespace Hippocampus.ViewModels
         public MainWindowViewModel()
         {
             ImageWindowInteraction = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
-            var ready = this.WhenAnyValue(m => m.InputPath, i => ((FilePath)i).Exists());
+            var ready = this.WhenAnyValue(m => m.InputPath, i => new DirectoryPath(i).Exists());
 
             Launch = ReactiveCommand.Create(() => Output.ShowOutput(), ready);
 
@@ -129,6 +173,7 @@ namespace Hippocampus.ViewModels
                 => OutputPath = await ShowFileBrowser() ?? OutputPath);
 
             LoadOutputFormats();
+            LoadInputFormats();
         }
     }
 }

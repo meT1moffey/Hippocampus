@@ -1,12 +1,13 @@
 ﻿using System;
+using Hippocampus.Models.FileLocations;
 
-namespace Hippocampus.Models.OutputOptions
+namespace Hippocampus.Models.OutputFormats
 {
     public class FileOutput : OutputFormat
     {
-        Func<FilePath> GetOutputPath;
+        Func<DirectoryPath> GetOutputPath;
 
-        public FileOutput(BaseOutputConfig config, Func<FilePath> _GetOutputPath) : base(config)
+        public FileOutput(BaseOutputConfig config, Func<DirectoryPath> _GetOutputPath) : base(config)
             => GetOutputPath = _GetOutputPath;
 
         public override void ShowOutput()
