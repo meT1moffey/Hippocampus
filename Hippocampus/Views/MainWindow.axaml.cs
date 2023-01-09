@@ -10,7 +10,7 @@ namespace Hippocampus.Views
         public MainWindow()
         {
             InitializeComponent();
-            this.WhenActivated(d => d(ViewModel!.ShowDialog.RegisterHandler(DoShowDialogAsync)));
+            this.WhenActivated(d => d(ViewModel!.ShowImageWindow.RegisterHandler(DoShowDialogAsync)));
         }
 
         private async Task DoShowDialogAsync(InteractionContext<ImageWindowViewModel, MainWindowViewModel?> interaction)

@@ -1,22 +1,20 @@
-﻿using Avalonia.Data;
-using Avalonia.Data.Converters;
-using Avalonia.Media;
-using System.Globalization;
-using System;
-using System.IO;
+﻿using System.IO;
 
 namespace Hippocampus.Models
 {
     public class FilePath
     {
-        public string path;
-
-        public FilePath() => path = "";
-        public FilePath(string _path) => path = _path;
+        #region Convertation operators
         public static explicit operator FilePath(string path) => new FilePath(path);
         public static implicit operator string(FilePath path) => path != null ? path.path : "";
         public override string ToString() => path;
+        #endregion
 
+        public string path;
+
+        public FilePath(string _path = "") => path = _path;
+
+        #region File methods
         public bool Exists() => File.Exists(path);
         public bool Empty() => string.IsNullOrEmpty(path);
 
@@ -27,5 +25,6 @@ namespace Hippocampus.Models
                 data.CopyTo(file);
         }
         public void Delete() => File.Delete(path);
+        #endregion
     }
 }

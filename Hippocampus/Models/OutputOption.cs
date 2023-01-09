@@ -11,6 +11,7 @@ namespace Hippocampus.Models
 
     public class OutputOption
     {
+        #region Convertation operators
         public static implicit operator OutputOption(OutputOptionEnum option) => new(option);
         public static implicit operator OutputOption(string option)
             => Enum.Parse<OutputOptionEnum>(option);
@@ -19,6 +20,7 @@ namespace Hippocampus.Models
         public static implicit operator string(OutputOption option)
             => option.option.ToString();
         public override string ToString() => (string)this;
+        #endregion
         public static string[] GetAllOptions() => Enum.GetNames<OutputOptionEnum>();
 
         public OutputOptionEnum option;

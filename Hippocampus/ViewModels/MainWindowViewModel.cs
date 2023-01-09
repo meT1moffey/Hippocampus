@@ -13,11 +13,14 @@ namespace Hippocampus.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        #region Varibles
         string inputPathText, outputPathText, key, labelOutput;
         OutputOptionViewModel selectedOutputVM;
-        
-        public Window win;
 
+        public Window win;
+        #endregion
+
+        #region Properties
         public string InputPathText
         {
             get => inputPathText;
@@ -57,13 +60,17 @@ namespace Hippocampus.ViewModels
         {
             get => selectedOutputVM.GetOption();
         }
+        #endregion
+
+        #region ReactiveUI varibles
         public ReactiveCommand<Unit, Unit> Launch { get; }
-        public ReactiveCommand<string, OutputOption> TypeSelected { get; }
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
-        public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowDialog { get; }
+        public Interaction<ImageWindowViewModel, MainWindowViewModel?> ShowImageWindow { get; }
         public ObservableCollection<OutputOptionViewModel> GetOptions { get; } = new();
+        #endregion
 
+        #region Methods
         void LoadOptions()
         {
             GetOptions.Clear();
@@ -106,7 +113,7 @@ namespace Hippocampus.ViewModels
                 return;
             }
 
-            await ShowDialog.Handle(imageWin);
+            await ShowImageWindow.Handle(imageWin);
         }
 
         void ShowImage()
@@ -138,10 +145,11 @@ namespace Hippocampus.ViewModels
                     return;
             }
         }
+        #endregion
 
         public MainWindowViewModel()
         {
-            ShowDialog = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
+            ShowImageWindow = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
             var ready = this.WhenAnyValue(m => m.InputPathText, i => ((FilePath)i).Exists());
 
             Launch = ReactiveCommand.Create(() => ShowOutput(), ready);
