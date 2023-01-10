@@ -1,7 +1,9 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,8 +34,10 @@ namespace Hippocampus.Models.FileLocations
             => throw new InvalidCastException("This location type does not support edit files");
         public virtual void Delete()
             => throw new InvalidCastException("This location type does not support edit files");
+        public abstract Stream DownloadCoded(string key);
         #endregion
 
+        public abstract FileLocation MakeLocation(string location);
         public abstract string GetName();
         public virtual bool AllowBrowseInput() => false;
     }

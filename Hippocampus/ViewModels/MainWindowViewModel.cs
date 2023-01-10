@@ -28,7 +28,7 @@ namespace Hippocampus.ViewModels
             {
                 Action<string> SetLabel = (label) => LabelOutput = label;
                 Action<ImageWindowViewModel> ShowImageWindow = (vm) => OpenImageWindow(vm);
-                Func<FileLocation> GetInputFile = () => { Input.Location = InputPath; return Input; };
+                Func<FileLocation> GetInputFile = () => Input.MakeLocation(InputPath);
                 Func<DirectoryPath> GetOutputPath = () => new DirectoryPath(OutputPath);
                 Func<string> GetKey = () => Key;
                 BaseOutputConfig config = new(SetLabel, GetInputFile, GetKey);
@@ -46,7 +46,8 @@ namespace Hippocampus.ViewModels
             get
             {
                 return new FileLocation[] {
-                    new DirectoryPath()
+                    new DirectoryPath(),
+                    new UrlLink()
                 };
             }
         }
@@ -161,8 +162,11 @@ namespace Hippocampus.ViewModels
 
         public MainWindowViewModel()
         {
+            LoadOutputFormats();
+            LoadInputFormats();
+
             ImageWindowInteraction = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
-            var ready = this.WhenAnyValue(m => m.InputPath, i => new DirectoryPath(i).Exists());
+            var ready = this.WhenAnyValue(m => m.InputPath, i => Input.MakeLocation(i).Exists());
 
             Launch = ReactiveCommand.Create(() => Output.ShowOutput(), ready);
 
@@ -171,9 +175,6 @@ namespace Hippocampus.ViewModels
 
             BrowseOutput = ReactiveCommand.CreateFromTask(async ()
                 => OutputPath = await ShowFileBrowser() ?? OutputPath);
-
-            LoadOutputFormats();
-            LoadInputFormats();
         }
     }
 }

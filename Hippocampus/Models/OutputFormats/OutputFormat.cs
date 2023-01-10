@@ -24,8 +24,7 @@ namespace Hippocampus.Models.OutputFormats
             {
                 throw new FileNotFoundException("Input file does not exsist");
             }
-            using (var file = GetInputFile().Download())
-                return CoderService.Load(file, GetKey());
+            return GetInputFile().DownloadCoded(GetKey());
         }
 
         public abstract void ShowOutput();

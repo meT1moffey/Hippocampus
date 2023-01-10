@@ -1,5 +1,4 @@
 ﻿using Hippocampus.Services;
-using System;
 
 namespace Hippocampus.Models.OutputFormats
 {

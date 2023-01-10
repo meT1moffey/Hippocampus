@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
+using System.Net.Http.Headers;
+using System.Net.Http;
+using HarfBuzzSharp;
 
 namespace Hippocampus.Services
 {
@@ -9,12 +13,13 @@ namespace Hippocampus.Services
         {
             Stream stream = new MemoryStream();
             var writer = new BinaryWriter(stream);
+            byte[] buffer = new byte[1];
 
             if (string.IsNullOrEmpty(key)) key = "\0";
             
-            for (int i = 0; i < data.Length; i++)
+            for (int i = 0; data.Read(buffer, 0, buffer.Length) != 0; i++)
             {
-                writer.Write((byte)(data.ReadByte() ^ key[i % key.Length]));
+                writer.Write((byte)(buffer[0] ^ key[i % key.Length]));
             }
 
             writer.Flush();
