@@ -16,8 +16,8 @@
 		</ListBox>
 		
 		<DockPanel>
-			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseInput}"/>
-			<TextBox AcceptsReturn="False" Text="{Binding InputPath}" Watermark="Input file path"/>
+			<Button Content="Browse" DockPanel.Dock="Right" Command="{Binding BrowseInput}" IsVisible="{Binding AllowBrowseInput}"/>
+			<TextBox AcceptsReturn="False" Text="{Binding InputPath}" Watermark="Input file path or url"/>
 		</DockPanel>
 		<TextBox AcceptsReturn="False" Text="{Binding Key}" Watermark="Key" PasswordChar="*"/>
 

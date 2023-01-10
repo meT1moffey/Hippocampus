@@ -37,6 +37,6 @@ namespace Hippocampus.Models.FileLocations
 
         public override FileLocation MakeLocation(string location) => new DirectoryPath(location);
         public override string GetName() => "From hard drive";
-        public virtual bool AllowBrowseInput() => true;
+        public override bool AllowBrowseInput() => true;
     }
 }
