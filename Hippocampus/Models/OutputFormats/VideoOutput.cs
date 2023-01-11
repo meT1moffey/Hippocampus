@@ -24,6 +24,6 @@ namespace Hippocampus.Models.OutputFormats
             }
             ShowVideoWindow(videoWin);
         }
-        public override string GetName() => "Video (Beta)";
+        public override string GetName() => "Video (Alpha)";
     }
 }
