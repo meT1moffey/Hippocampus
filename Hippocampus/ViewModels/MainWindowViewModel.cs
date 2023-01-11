@@ -36,7 +36,8 @@ namespace Hippocampus.ViewModels
                 return new OutputFormat[] {
                     new TextOutput(config),
                     new ImageOutput(config, ShowImageWindow),
-                    new FileOutput(config, GetOutputPath)
+                    new FileOutput(config, GetOutputPath),
+                    new VideoOutput(config)
                 };
             }
         }
