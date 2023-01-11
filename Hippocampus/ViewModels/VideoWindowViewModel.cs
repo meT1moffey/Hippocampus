@@ -1,8 +1,6 @@
-﻿using ReactiveUI;
-using Avalonia.Media.Imaging;
-using System.IO;
-using LibVLCSharp.Shared;
+﻿using LibVLCSharp.Shared;
 using System;
+using System.IO;
 
 namespace Hippocampus.ViewModels
 {
@@ -15,14 +13,8 @@ namespace Hippocampus.ViewModels
         public VideoWindowViewModel(Stream video)
         {
             MediaPlayer = new MediaPlayer(_libVlc);
-            Play();
+            MediaPlayer.Media = new Media(_libVlc, new StreamMediaInput(video));
+            MediaPlayer.Play();
         }
-
-        public void Play()
-        {
-            using var media = new Media(_libVlc, new Uri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"));
-            MediaPlayer.Play(media);
-        }
-
     }
 }
