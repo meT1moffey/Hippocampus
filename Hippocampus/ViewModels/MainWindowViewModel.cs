@@ -169,8 +169,8 @@ namespace Hippocampus.ViewModels
 
         public MainWindowViewModel()
         {
-            if (Program.Args.Length >= 2)
-                InputPath = Program.Args[1];
+            if (Program.Args.Length >= 1)
+                InputPath = Program.Args[0];
 
             LoadOutputFormats();
             LoadInputFormats();
