@@ -28,6 +28,7 @@ namespace Hippocampus.ViewModels
             {
                 Action<string> SetLabel = (label) => LabelOutput = label;
                 Action<ImageWindowViewModel> ShowImageWindow = (vm) => OpenImageWindow(vm);
+                Action<VideoWindowViewModel> ShowVideoWindow = (vm) => OpenVideoWindow(vm);
                 Func<FileLocation> GetInputFile = () => Input.MakeLocation(InputPath);
                 Func<DirectoryPath> GetOutputPath = () => new DirectoryPath(OutputPath);
                 Func<string> GetKey = () => Key;
@@ -37,7 +38,7 @@ namespace Hippocampus.ViewModels
                     new TextOutput(config),
                     new ImageOutput(config, ShowImageWindow),
                     new FileOutput(config, GetOutputPath),
-                    new VideoOutput(config)
+                    new VideoOutput(config, ShowVideoWindow)
                 };
             }
         }
@@ -115,7 +116,8 @@ namespace Hippocampus.ViewModels
         public ReactiveCommand<Unit, Unit> Launch { get; }
         public ReactiveCommand<Unit, string> BrowseInput { get; }
         public ReactiveCommand<Unit, string> BrowseOutput { get; }
-        public Interaction<ImageWindowViewModel, MainWindowViewModel?> ImageWindowInteraction { get; }
+        public Interaction<ImageWindowViewModel, MainWindowViewModel?> ImageWindowInteraction { get; } = new();
+        public Interaction<VideoWindowViewModel, MainWindowViewModel?> VideoWindowInteraction { get; } = new();
         public ObservableCollection<OutputFormatViewModel> GetOutputFormats { get; } = new();
         public ObservableCollection<InputFormatViewModel> GetInputFormats { get; } = new();
         #endregion
@@ -159,6 +161,10 @@ namespace Hippocampus.ViewModels
         public void OpenImageWindow(ImageWindowViewModel imageWin)
             => ReactiveCommand.CreateFromTask(async ()
                 => await ImageWindowInteraction.Handle(imageWin)).Execute();
+
+        public void OpenVideoWindow(VideoWindowViewModel videoWin)
+            => ReactiveCommand.CreateFromTask(async ()
+                => await VideoWindowInteraction.Handle(videoWin)).Execute();
         #endregion
 
         public MainWindowViewModel()
@@ -166,7 +172,6 @@ namespace Hippocampus.ViewModels
             LoadOutputFormats();
             LoadInputFormats();
 
-            ImageWindowInteraction = new Interaction<ImageWindowViewModel, MainWindowViewModel?>();
             var ready = this.WhenAnyValue(m => m.InputPath, i => Input.MakeLocation(i).Exists());
 
             Launch = ReactiveCommand.Create(() => Output.ShowOutput(), ready);

@@ -3,6 +3,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Hippocampus.ViewModels;
 using Hippocampus.Views;
+using LibVLCSharp;
+using LibVLCSharp.Shared;
 
 namespace Hippocampus
 {
@@ -10,6 +12,7 @@ namespace Hippocampus
     {
         public override void Initialize()
         {
+            Core.Initialize();
             AvaloniaXamlLoader.Load(this);
         }
 
